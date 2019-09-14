@@ -34,11 +34,11 @@ spec:
         volumeMounts:
         - mountPath: /sys
           name: sys-volume
-      env:
-      - name: MY_NODE_NAME
-        valueFrom:
-          fieldRef:
-            fieldPath: spec.nodeName
+        env:
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
       volumes:
       - name: sys-volume
         hostPath:
