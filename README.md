@@ -54,8 +54,13 @@ By default, all pods in the `default` namespace are being counted. You can chang
 - For each running pod you see a white led. You can also assign colors to images by setting `IMAGE_COLORS` to a map of `image tag`-`color`-pairs:
 
   This sample assigns different colors to some Docker images:
-  ```
-  IMAGE_COLORS='{ "sample:1.0.0": [255, 0, 0, 1], "sample:2.0.0": [0, 255, 0, 1], "another-image:1.0.0": [0, 0, 255, 0.5]}'
+
+  ```yaml
+  …
+  env:
+  - name: IMAGE_COLORS
+    value: { "sample:1.0.0": [255, 0, 0, 1], "sample:2.0.0": [0, 255, 0, 1], "another-image:1.0.0": [0, 0, 255, 0.5] }
+  …
   ```
 
   Please note: The 4th element of the color array contains brightness information in the range from `0.0` to `1.0`.
