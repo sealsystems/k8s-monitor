@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "=> Building $IMAGE_NAME..."
+docker build --build-arg JFROG_CREDENTIALS=$JFROG_CREDENTIALS -f $DOCKERFILE_PATH -t $IMAGE_NAME .

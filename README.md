@@ -1,52 +1,69 @@
-# Docker Swarm Monitor
-[![Build Status](https://travis-ci.org/StefanScherer/swarm-monitor.svg?branch=master)](https://travis-ci.org/StefanScherer/swarm-monitor)
-[![This image on DockerHub](https://img.shields.io/docker/pulls/stefanscherer/monitor.svg)](https://hub.docker.com/r/stefanscherer/monitor/)
+# K8s Monitor
+[![Build Status](https://travis-ci.org/sealsystems/k8s-monitor.svg?branch=master)](https://travis-ci.org/sealsystems/k8s-monitor)
+[![This image on DockerHub](https://img.shields.io/docker/pulls/sealsystems/k8s-monitor.svg)](https://hub.docker.com/r/sealsystems/k8s-monitor/)
 
-The Docker Swarm Monitor shows running containers (eg. replicas of a swarm service) with the Blinkt! LED strip.
+(Based on https://github.com/stefanscherer/swarm-monitor)
 
- ```bash
- docker run -v /sys:/sys -v /var/run/docker.sock:/var/run/docker.sock monitor
+`k8s-monitor` shows running pods (eg. replicas of a service) with the Blinkt! LED strip.
+
+## Deployment
+
+Use the following sample config to deploy the application:
+
+ ```yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: monitor
+  labels:
+    app: monitor
+spec:
+  selector:
+    matchLabels:
+      app: monitor
+  template:
+    metadata:
+      labels:
+        app: monitor
+    spec:
+      containers:
+      - name: monitor
+        image: sealsystems/k8s-monitor:latest
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /sys
+          name: sys-volume
+      env:
+      - name: MY_NODE_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: spec.nodeName
+      volumes:
+      - name: sys-volume
+        hostPath:
+          path: /sys
  ```
 
+By default, all pods in the `default` namespace are being counted. You can change the behavior via environment variables:
 
-## Swarm Mode Demo
+- `LABEL_SELECTOR` can be used to filter the pods you want to monitor. For more information about label selectors, see: https://kubernetes.io/docs/
 
-```
-docker service create --name monitor \
---mode global --restart-condition any --mount type=bind,src=/sys,dst=/sys --mount type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock \
-stefanscherer/monitor:1.1.0
-```
+- To observe another namespace, set environment variable `NAMESPACE`.
 
-Create a service
+- For each running pod you see a white led. You can also assign colors to images by setting `IMAGE_COLORS` to a map of `image tag`-`color`-pairs:
 
-```
-docker service create --name whoami stefanscherer/whoami:1.1.0
-```
+  This sample assigns different colors to some Docker images:
+  ```
+  IMAGE_COLORS='{ "sample:1.0.0": [255, 0, 0, 1], "sample:2.0.0": [0, 255, 0, 1], "another-image:1.0.0": [0, 0, 255, 0.5]}'
+  ```
 
-Scale service up and down
+  Please note: The 4th element of the color array contains brightness information in the range from `0.0` to `1.0`.
 
-```
-docker service scale whoami=4
-docker service scale whoami=16
-docker service scale whoami=32
-```
+Using the sample deployment above, the application should run out of the box. The following environment variables should be set by the deployment config or k8s itself:
 
-![scale up](images/scale-up.gif)
+- `MY_NODE_NAME` (no default): nodeName of the current Host. See sample deployment config above for details.
 
-Run a rolling update
+- `KUBERNETES_SERVICE_HOST` (default: `kube-api-server`): Hostname of API server
 
-```
-docker service update --image stefanscherer/whoami:1.2.0 \
-  --update-parallelism 4  --update-delay 2s whoami
-```
-
-![scale up](images/rolling-update.gif)
-
-
-Scale down
-
-```
-docker service scale whoami=1
-```
-
-![scale up](images/scale-down-to-one.gif)
+- `KUBERNETES_PORT_443_TCP_PORT` (default: `443`): HTTPS port of API server
