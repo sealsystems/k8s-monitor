@@ -1,15 +1,34 @@
 {
-  "name": "docker-monitor",
-  "version": "1.2.0",
+  "name": "k8s-monitor",
+  "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "bot": "bot",
+    "licenses": "license-checker --production --csv",
+    "lint": "lint",
+    "lint:fix": "lint-fix",
+    "release": "release",
+    "test:coverage": "test-coverage",
+    "test": "test-run",
+    "test:coverage:check": "test-coverage-check",
+    "test:report": "test-report"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "node-blinkt": "sealsystems/node-blinkt#sysfs",
-    "node-docker-monitor": "1.0.10"
+    "getenv": "0.7.0",
+    "kube-watch": "0.5.4",
+    "node-blinkt": "github:sealsystems/node-blinkt#sysfs"
+  },
+  "release": {
+    "extends": "@sealsystems/semantic-release/node-binary"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@sealsystems/eslint-config-es": "3.5.3",
+    "@sealsystems/mocha": "4.1.1",
+    "@sealsystems/semantic-release": "4.0.12"
   }
 }

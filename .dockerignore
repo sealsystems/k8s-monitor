@@ -1,2 +1,4 @@
-*.yml
-travis*.sh
+.github/
+.nyc_output/
+output/
+node_modules/
