@@ -16,7 +16,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "getenv": "0.7.0",
+    "getenv": "1.0.0",
     "kube-watch": "0.5.4",
     "node-blinkt": "github:sealsystems/node-blinkt#sysfs"
   },
